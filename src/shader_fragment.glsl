@@ -21,7 +21,7 @@ uniform mat4 projection;
 // Identificador que define qual objeto está sendo desenhado no momento
 #define SPHERE 0
 #define BUNNY  1
-#define PLANE  2
+#define FLOOR  2
 #define WALL1  3
 #define WALL2  4
 #define WALL3  5
@@ -80,6 +80,8 @@ void main()
 
     // Equação de Iluminação
     float lambert = max(0,dot(n,l));
+    // Blinn-Phong
+    float blinn_phong = max(0, pow(dot(n,h),15));
 
     if ( object_id == SPHERE )
     {
@@ -128,7 +130,7 @@ void main()
         U = (position_model.x-minx)/(maxx-minx);
         V = (position_model.y-miny)/(maxy-miny);
     }
-    else if ( object_id == PLANE )
+    else if ( object_id == FLOOR )
     {
         // Coordenadas de textura do plano, obtidas do arquivo OBJ.
         U = texcoords.x;
@@ -171,9 +173,6 @@ void main()
     vec3 Kd_wall3 = texture(TextureImage4, vec2(U,V)).rgb;
     vec3 Kd_wall4 = texture(TextureImage5, vec2(U,V)).rgb;
 
-    // Blinn-Phong
-    float blinn_phong = max(0, pow(dot(n,h),15));
-
 
     if ( object_id == WALL1 )
     {
@@ -199,9 +198,9 @@ void main()
     {
         color = Kd0_dia * (lambert + 0.01);
     }
-    else if ( object_id == PLANE )
+    else if ( object_id == FLOOR )
     {
-        color = Kd0_dia * (lambert + 0.01);
+        color = Kd_wall2 * (lambert + 0.01);
     }
 
     // Cor final com correção gamma, considerando monitor sRGB.

@@ -285,9 +285,9 @@ int main(int argc, char* argv[])
     ComputeNormals(&bunnymodel);
     BuildTrianglesAndAddToVirtualScene(&bunnymodel);
 
-    ObjModel planemodel("../../data/plane.obj");
-    ComputeNormals(&planemodel);
-    BuildTrianglesAndAddToVirtualScene(&planemodel);
+    ObjModel floormodel("../../data/floor.obj");
+    ComputeNormals(&floormodel);
+    BuildTrianglesAndAddToVirtualScene(&floormodel);
 
     ObjModel wall1model("../../data/wall.obj");
     ComputeNormals(&wall1model);
@@ -408,7 +408,7 @@ int main(int argc, char* argv[])
 
         #define SPHERE 0
         #define BUNNY  1
-        #define PLANE  2
+        #define FLOOR  2
         #define WALL1  3
         #define WALL2  4
         #define WALL3  5
@@ -432,10 +432,10 @@ int main(int argc, char* argv[])
         DrawVirtualObject("bunny");
 
         // Desenhamos o plano do chão
-        model = Matrix_Translate(0.0f,0.0f,0.0f) * Matrix_Scale(3.0f, 3.0f, 1.0f);
+        model = Matrix_Translate(0.0f,0.0f,2.0f) * Matrix_Scale(3.0f, 3.0f, 3.0f);
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-        glUniform1i(object_id_uniform, PLANE);
-        DrawVirtualObject("plane");
+        glUniform1i(object_id_uniform, FLOOR);
+        DrawVirtualObject("floor");
 
         // Desenhamos a parede 1
         model = Matrix_Translate(0.0f,1.0f,-1.0f) * Matrix_Rotate_X(PI / 2) * Matrix_Scale(3.0f, 3.0f, 1.0f);
