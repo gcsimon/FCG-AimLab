@@ -24,6 +24,8 @@ uniform mat4 projection;
 #define PLANE  2
 #define WALL1  3
 #define WALL2  4
+#define WALL3  5
+#define WALL4  6
 uniform int object_id;
 
 // Parâmetros da axis-aligned bounding box (AABB) do modelo
@@ -35,6 +37,8 @@ uniform sampler2D TextureImage0;
 uniform sampler2D TextureImage1;
 uniform sampler2D TextureImage2;
 uniform sampler2D TextureImage3;
+uniform sampler2D TextureImage4;
+uniform sampler2D TextureImage5;
 
 // O valor de saída ("out") de um Fragment Shader é a cor final do fragmento.
 out vec3 color;
@@ -62,10 +66,13 @@ void main()
     vec4 n = normalize(normal);
 
     // Vetor que define o sentido da fonte de luz em relação ao ponto atual.
-    vec4 l = normalize(vec4(1.0,1.0,0.0,0.0));
+    vec4 l = normalize(camera_position - p);
 
     // Vetor que define o sentido da câmera em relação ao ponto atual.
     vec4 v = normalize(camera_position - p);
+
+    //Vetor usado para o modelo de iluminacao Blinn-Phong
+    vec4 h = normalize(v + l);
 
     // Coordenadas de textura U e V
     float U = 0.0;
@@ -142,13 +149,61 @@ void main()
         V = texcoords.y;
     }
 
+    else if ( object_id == WALL3 )
+    {
+        // Coordenadas de textura do plano, obtidas do arquivo OBJ.
+        U = texcoords.x;
+        V = texcoords.y;
+    }
+
+    else if ( object_id == WALL4 )
+    {
+        // Coordenadas de textura do plano, obtidas do arquivo OBJ.
+        U = texcoords.x;
+        V = texcoords.y;
+    }
+
     vec3 Kd0_dia = texture(TextureImage0, vec2(U,V)).rgb;
     vec3 Kd0_noite = texture(TextureImage1, vec2(U,V)).rgb;
-    vec3 wall1_texture = texture(TextureImage2, vec2(U,V)).rgb;
-    vec3 wall2_texture = texture(TextureImage3, vec2(U,V)).rgb;
+    vec3 Kd_wall1 = texture(TextureImage2, vec2(U,V)).rgb;
+    vec3 Ks_wall1 = vec3(0.3f,0.3f,0.3f);
+    vec3 Kd_wall2 = texture(TextureImage3, vec2(U,V)).rgb;
+    vec3 Kd_wall3 = texture(TextureImage4, vec2(U,V)).rgb;
+    vec3 Kd_wall4 = texture(TextureImage5, vec2(U,V)).rgb;
 
-    color = wall1_texture * max(0,(1-lambert*8));
-    // color = wall1_textute * lambert;
+    // Blinn-Phong
+    float blinn_phong = max(0, pow(dot(n,h),15));
+
+
+    if ( object_id == WALL1 )
+    {
+        color = Kd_wall1 * (lambert + 0.01) + Ks_wall1 * blinn_phong;
+    }
+    else if ( object_id == WALL2 )
+    {
+        color = Kd_wall2 * (lambert + 0.01);
+    }
+    else if ( object_id == WALL3 )
+    {
+        color = Kd_wall3 * (lambert + 0.01);
+    }
+    else if ( object_id == WALL4 )
+    {
+        color = Kd_wall4 * (lambert + 0.01);
+    }
+    else if ( object_id == BUNNY )
+    {
+        color = Kd0_dia *(lambert + 0.01);
+    }
+    else if ( object_id == SPHERE )
+    {
+        color = Kd0_dia * (lambert + 0.01);
+    }
+    else if ( object_id == PLANE )
+    {
+        color = Kd0_dia * (lambert + 0.01);
+    }
+
     // Cor final com correção gamma, considerando monitor sRGB.
     // Veja https://en.wikipedia.org/w/index.php?title=Gamma_correction&oldid=751281772#Windows.2C_Mac.2C_sRGB_and_TV.2Fvideo_standard_gammas
     color = pow(color, vec3(1.0,1.0,1.0)/2.2);

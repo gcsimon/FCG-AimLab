@@ -165,7 +165,7 @@ bool g_MiddleMouseButtonPressed = false; // Análogo para botão do meio do mous
 // renderização.
 float g_CameraTheta = 0.0f; // Ângulo no plano ZX em relação ao eixo Z
 float g_CameraPhi = 0.0f;   // Ângulo em relação ao eixo Y
-float g_CameraDistance = 3.5f; // Distância da câmera para a origem
+float g_CameraDistance = 10.0f; // Distância da câmera para a origem
 
 // Variáveis que controlam rotação do antebraço
 float g_ForearmAngleZ = 0.0f;
@@ -273,6 +273,8 @@ int main(int argc, char* argv[])
     LoadTextureImage("../../data/tc-earth_nightmap_citylights.gif"); // TextureImage1
     LoadTextureImage("../../data/wall1.jpg"); // TextureImage2
     LoadTextureImage("../../data/wall2.jpg"); // TextureImage3
+    LoadTextureImage("../../data/wall3.jpg"); // TextureImage4
+    LoadTextureImage("../../data/wall4.jpg"); // TextureImage5
 
     // Construímos a representação de objetos geométricos através de malhas de triângulos
     ObjModel spheremodel("../../data/sphere.obj");
@@ -283,7 +285,7 @@ int main(int argc, char* argv[])
     ComputeNormals(&bunnymodel);
     BuildTrianglesAndAddToVirtualScene(&bunnymodel);
 
-    ObjModel planemodel("../../data/floor.obj");
+    ObjModel planemodel("../../data/plane.obj");
     ComputeNormals(&planemodel);
     BuildTrianglesAndAddToVirtualScene(&planemodel);
 
@@ -294,6 +296,14 @@ int main(int argc, char* argv[])
     ObjModel wall2model("../../data/wall.obj");
     ComputeNormals(&wall2model);
     BuildTrianglesAndAddToVirtualScene(&wall2model);
+
+    ObjModel wall3model("../../data/wall.obj");
+    ComputeNormals(&wall3model);
+    BuildTrianglesAndAddToVirtualScene(&wall3model);
+
+    ObjModel wall4model("../../data/wall.obj");
+    ComputeNormals(&wall4model);
+    BuildTrianglesAndAddToVirtualScene(&wall4model);
 
     if ( argc > 1 )
     {
@@ -401,6 +411,8 @@ int main(int argc, char* argv[])
         #define PLANE  2
         #define WALL1  3
         #define WALL2  4
+        #define WALL3  5
+        #define WALL4  6
         #define PI     3.14159265
 
         // Desenhamos o modelo da esfera
@@ -420,21 +432,33 @@ int main(int argc, char* argv[])
         DrawVirtualObject("bunny");
 
         // Desenhamos o plano do chão
-        model = Matrix_Translate(0.0f,-1.1f,0.0f);
+        model = Matrix_Translate(0.0f,0.0f,0.0f) * Matrix_Scale(3.0f, 3.0f, 1.0f);
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, PLANE);
         DrawVirtualObject("plane");
 
         // Desenhamos a parede 1
-        model = Matrix_Translate(-3.0f,0.0f,0.0f) * Matrix_Rotate_X(PI / 2);
+        model = Matrix_Translate(0.0f,1.0f,-1.0f) * Matrix_Rotate_X(PI / 2) * Matrix_Scale(3.0f, 3.0f, 1.0f);
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, WALL1);
         DrawVirtualObject("wall");
 
         // Desenhamos a parede 2
-        model = Matrix_Translate(-3.0f,0.0f,1.5f) * Matrix_Rotate_Z(PI / 2);
+        model = Matrix_Translate(3.0f,1.0f,2.0f) * Matrix_Rotate_Z(PI / 2) * Matrix_Rotate_Y(-PI/2) * Matrix_Scale(3.0f, 3.0f, 1.0f);
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, WALL2);
+        DrawVirtualObject("wall");
+
+        // Desenhamos a parede 3
+        model = Matrix_Translate(0.0f,1.0f,5.0f) * Matrix_Rotate_X(-PI / 2) * Matrix_Scale(3.0f, 3.0f, 1.0f);
+        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(object_id_uniform, WALL3);
+        DrawVirtualObject("wall");
+
+        // Desenhamos a parede 4
+        model = Matrix_Translate(-3.0f,1.0f,2.0f) * Matrix_Rotate_Z(-PI / 2) * Matrix_Rotate_Y(-PI/2) * Matrix_Scale(3.0f, 3.0f, 1.0f);
+        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(object_id_uniform, WALL4);
         DrawVirtualObject("wall");
 
         // Pegamos um vértice com coordenadas de modelo (0.5, 0.5, 0.5, 1) e o
