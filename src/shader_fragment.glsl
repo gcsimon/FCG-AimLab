@@ -22,6 +22,8 @@ uniform mat4 projection;
 #define SPHERE 0
 #define BUNNY  1
 #define PLANE  2
+#define WALL1  3
+#define WALL2  4
 uniform int object_id;
 
 // Parâmetros da axis-aligned bounding box (AABB) do modelo
@@ -32,6 +34,7 @@ uniform vec4 bbox_max;
 uniform sampler2D TextureImage0;
 uniform sampler2D TextureImage1;
 uniform sampler2D TextureImage2;
+uniform sampler2D TextureImage3;
 
 // O valor de saída ("out") de um Fragment Shader é a cor final do fragmento.
 out vec3 color;
@@ -67,6 +70,9 @@ void main()
     // Coordenadas de textura U e V
     float U = 0.0;
     float V = 0.0;
+
+    // Equação de Iluminação
+    float lambert = max(0,dot(n,l));
 
     if ( object_id == SPHERE )
     {
@@ -122,13 +128,27 @@ void main()
         V = texcoords.y;
     }
 
-    // Equação de Iluminação
-    float lambert = max(0,dot(n,l));
+    else if ( object_id == WALL1 )
+    {
+        // Coordenadas de textura do plano, obtidas do arquivo OBJ.
+        U = texcoords.x;
+        V = texcoords.y;
+    }
+
+    else if ( object_id == WALL2 )
+    {
+        // Coordenadas de textura do plano, obtidas do arquivo OBJ.
+        U = texcoords.x;
+        V = texcoords.y;
+    }
 
     vec3 Kd0_dia = texture(TextureImage0, vec2(U,V)).rgb;
     vec3 Kd0_noite = texture(TextureImage1, vec2(U,V)).rgb;
+    vec3 wall1_texture = texture(TextureImage2, vec2(U,V)).rgb;
+    vec3 wall2_texture = texture(TextureImage3, vec2(U,V)).rgb;
 
-    color = Kd0_dia * (lambert + 0.01) + Kd0_noite * max(0,(1-lambert*8));
+    color = wall1_texture * max(0,(1-lambert*8));
+    // color = wall1_textute * lambert;
     // Cor final com correção gamma, considerando monitor sRGB.
     // Veja https://en.wikipedia.org/w/index.php?title=Gamma_correction&oldid=751281772#Windows.2C_Mac.2C_sRGB_and_TV.2Fvideo_standard_gammas
     color = pow(color, vec3(1.0,1.0,1.0)/2.2);
