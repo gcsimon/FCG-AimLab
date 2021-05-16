@@ -37,8 +37,6 @@ uniform sampler2D TextureImage0;
 uniform sampler2D TextureImage1;
 uniform sampler2D TextureImage2;
 uniform sampler2D TextureImage3;
-uniform sampler2D TextureImage4;
-uniform sampler2D TextureImage5;
 
 // O valor de saída ("out") de um Fragment Shader é a cor final do fragmento.
 out vec3 color;
@@ -136,29 +134,7 @@ void main()
         U = texcoords.x;
         V = texcoords.y;
     }
-
-    else if ( object_id == WALL1 )
-    {
-        // Coordenadas de textura do plano, obtidas do arquivo OBJ.
-        U = texcoords.x;
-        V = texcoords.y;
-    }
-
-    else if ( object_id == WALL2 )
-    {
-        // Coordenadas de textura do plano, obtidas do arquivo OBJ.
-        U = texcoords.x;
-        V = texcoords.y;
-    }
-
-    else if ( object_id == WALL3 )
-    {
-        // Coordenadas de textura do plano, obtidas do arquivo OBJ.
-        U = texcoords.x;
-        V = texcoords.y;
-    }
-
-    else if ( object_id == WALL4 )
+    else
     {
         // Coordenadas de textura do plano, obtidas do arquivo OBJ.
         U = texcoords.x;
@@ -170,8 +146,6 @@ void main()
     vec3 Kd_wall1 = texture(TextureImage2, vec2(U,V)).rgb;
     vec3 Ks_wall1 = vec3(0.3f,0.3f,0.3f);
     vec3 Kd_wall2 = texture(TextureImage3, vec2(U,V)).rgb;
-    vec3 Kd_wall3 = texture(TextureImage4, vec2(U,V)).rgb;
-    vec3 Kd_wall4 = texture(TextureImage5, vec2(U,V)).rgb;
 
 
     if ( object_id == WALL1 )
@@ -184,11 +158,11 @@ void main()
     }
     else if ( object_id == WALL3 )
     {
-        color = Kd_wall3 * (lambert + 0.01);
+        color = Kd_wall1 * (lambert + 0.01);
     }
     else if ( object_id == WALL4 )
     {
-        color = Kd_wall4 * (lambert + 0.01);
+        color = Kd_wall2 * (lambert + 0.01);
     }
     else if ( object_id == BUNNY )
     {

@@ -273,8 +273,6 @@ int main(int argc, char* argv[])
     LoadTextureImage("../../data/tc-earth_nightmap_citylights.gif"); // TextureImage1
     LoadTextureImage("../../data/wall1.jpg"); // TextureImage2
     LoadTextureImage("../../data/wall2.jpg"); // TextureImage3
-    LoadTextureImage("../../data/wall3.jpg"); // TextureImage4
-    LoadTextureImage("../../data/wall4.jpg"); // TextureImage5
 
     // Construímos a representação de objetos geométricos através de malhas de triângulos
     ObjModel spheremodel("../../data/sphere.obj");
@@ -450,13 +448,13 @@ int main(int argc, char* argv[])
         DrawVirtualObject("wall");
 
         // Desenhamos a parede 3
-        model = Matrix_Translate(0.0f,1.0f,5.0f) * Matrix_Rotate_X(-PI / 2) * Matrix_Scale(3.0f, 3.0f, 1.0f);
+        model = Matrix_Translate(0.0f,1.0f,5.0f) * Matrix_Rotate_X(-PI / 2) * Matrix_Rotate_Y(PI) * Matrix_Scale(3.0f, 3.0f, 1.0f);
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, WALL3);
         DrawVirtualObject("wall");
 
         // Desenhamos a parede 4
-        model = Matrix_Translate(-3.0f,1.0f,2.0f) * Matrix_Rotate_Z(-PI / 2) * Matrix_Rotate_Y(-PI/2) * Matrix_Scale(3.0f, 3.0f, 1.0f);
+        model = Matrix_Translate(-3.0f,1.0f,2.0f) * Matrix_Rotate_Z(-PI / 2) * Matrix_Rotate_Y(PI/2) * Matrix_Scale(3.0f, 3.0f, 1.0f);
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, WALL4);
         DrawVirtualObject("wall");
