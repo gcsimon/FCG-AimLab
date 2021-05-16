@@ -158,22 +158,18 @@ void main()
     if ( object_id == WALL1 )
     {
         color = Kd_wall1 * (lambert + 0.01) + Ks_wall1 * blinn_phong;
-        // color = Kd0_TARGET * (lambert + 0.01);
     }
     else if ( object_id == WALL2 )
     {
         color = Kd_wall2 * (lambert + 0.01);
-        // color = Kd0_TARGET * (lambert + 0.01);
     }
     else if ( object_id == WALL3 )
     {
         color = Kd_wall1 * (lambert + 0.01);
-        // color = Kd0_TARGET * (lambert + 0.01);
     }
     else if ( object_id == WALL4 )
     {
         color = Kd_wall2 * (lambert + 0.01);
-        // color = Kd0_TARGET * (lambert + 0.01);
     }
 
     else if ( object_id == BUNNY )
