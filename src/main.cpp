@@ -1501,6 +1501,9 @@ void TextRendering_GameRunning(GLFWwindow* window, int number)
     char buffer[80];
     snprintf(buffer, 80, "You need to destroy %d more targets!", number);
     TextRendering_PrintString(window, buffer, -0.32f, 0.8f, 2.0f);
+
+    snprintf(buffer, 80, "x");
+    TextRendering_PrintString(window, buffer, 0.0f, 0.5f, 1.0f);
 }
 
 void TextRendering_ShowModelViewProjection(
