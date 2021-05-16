@@ -19,7 +19,7 @@ uniform mat4 view;
 uniform mat4 projection;
 
 // Identificador que define qual objeto está sendo desenhado no momento
-#define SPHERE 0
+#define TARGET 0
 #define BUNNY  1
 #define PLANE  2
 uniform int object_id;
@@ -32,6 +32,7 @@ uniform vec4 bbox_max;
 uniform sampler2D TextureImage0;
 uniform sampler2D TextureImage1;
 uniform sampler2D TextureImage2;
+uniform sampler2D TextureImage3;
 
 // O valor de saída ("out") de um Fragment Shader é a cor final do fragmento.
 out vec3 color;
@@ -64,11 +65,14 @@ void main()
     // Vetor que define o sentido da câmera em relação ao ponto atual.
     vec4 v = normalize(camera_position - p);
 
+    //Vetor usado para o modelo de iluminacao Blinn-Phong
+    vec4 h = normalize(v + l);
+
     // Coordenadas de textura U e V
     float U = 0.0;
     float V = 0.0;
 
-    if ( object_id == SPHERE )
+    if ( object_id == TARGET )
     {
         // PREENCHA AQUI as coordenadas de textura da esfera, computadas com
         // projeção esférica EM COORDENADAS DO MODELO. Utilize como referência
@@ -122,13 +126,36 @@ void main()
         V = texcoords.y;
     }
 
+    // Obtemos a refletância difusa a partir da leitura da imagem TextureImage0
+
+
     // Equação de Iluminação
     float lambert = max(0,dot(n,l));
+    // Termo de iluminacao do modelo Blinn-Phong
+    float blinn_phong = max(0, pow(dot(n,h),15));
+    //Refletancia especular do dragao
+    vec3 Ks_TARGET = vec3(0.9f,0.9f,0.9f);
+    vec3 Ks_weapon = vec3(0.3f,0.3f,0.3f);
 
     vec3 Kd0_dia = texture(TextureImage0, vec2(U,V)).rgb;
-    vec3 Kd0_noite = texture(TextureImage1, vec2(U,V)).rgb;
+    vec3 Kd0_weapon = texture(TextureImage1, vec2(U,V)).rgb;
+    vec3 Kd0_TARGET = texture(TextureImage0, vec2(U,V)).rgb;
 
-    color = Kd0_dia * (lambert + 0.01) + Kd0_noite * max(0,(1-lambert*8));
+    if ( object_id == BUNNY )
+    {
+        color = Kd0_weapon *(lambert + 0.01)+ Ks_weapon * blinn_phong;
+    }
+    if ( object_id == PLANE )
+    {
+        color = Kd0_dia * (lambert + 0.01);
+    }
+    if ( object_id == TARGET )
+    {
+        color = Kd0_TARGET * (lambert + 0.01);
+        //color = vec3(1,1,0)* (lambert + 0.02)+ Ks_TARGET * blinn_phong;
+    }
+
+    //color = Kd0_dia * (lambert + 0.01) + Kd0_noite * max(0,(1-lambert*8));
     // Cor final com correção gamma, considerando monitor sRGB.
     // Veja https://en.wikipedia.org/w/index.php?title=Gamma_correction&oldid=751281772#Windows.2C_Mac.2C_sRGB_and_TV.2Fvideo_standard_gammas
     color = pow(color, vec3(1.0,1.0,1.0)/2.2);

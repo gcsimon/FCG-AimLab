@@ -966,7 +966,7 @@
 	<inttypes.h>
 	<stdint.h>
 
-1619962755 source:c:\users\giosi\desktop\fcg-aimlab\src\main.cpp
+1621195355 source:c:\users\giosi\desktop\fcg-aimlab\src\main.cpp
 	<cmath>
 	<cstdio>
 	<cstdlib>
@@ -979,6 +979,8 @@
 	<sstream>
 	<stdexcept>
 	<algorithm>
+	<iostream>
+	"float.h"
 	<glad/glad.h>
 	<GLFW/glfw3.h>
 	<glm/mat4x4.hpp>
