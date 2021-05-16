@@ -165,7 +165,7 @@ bool g_MiddleMouseButtonPressed = false; // Análogo para botão do meio do mous
 // renderização.
 float g_CameraTheta = 0.0f; // Ângulo no plano ZX em relação ao eixo Z
 float g_CameraPhi = 0.0f;   // Ângulo em relação ao eixo Y
-float g_CameraDistance = 10.0f; // Distância da câmera para a origem
+float g_CameraDistance = 2.0f; // Distância da câmera para a origem
 
 // Variáveis que controlam rotação do antebraço
 float g_ForearmAngleZ = 0.0f;
@@ -180,6 +180,23 @@ bool g_UsePerspectiveProjection = true;
 
 // Variável que controla se o texto informativo será mostrado na tela.
 bool g_ShowInfoText = true;
+
+glm::vec4 up = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
+glm::vec4 camera_front = glm::vec4(0.0f, 0.0f, -1.0f, 1.0f);
+glm::vec4 camera_position_c  = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+glm::vec4 camera_view_vector = glm::vec4(1.0f, 0.0f, 1.0f, 0.0f);
+glm::vec4 camera_right = glm::normalize(crossproduct(up, camera_view_vector));
+glm::vec4 camera_up = crossproduct(camera_view_vector, camera_right);
+glm::mat4 view;
+
+float camera_front_speed = 100.0f;
+float camera_side_speed = 100.0f;
+
+float current_camera_front_speed = 0.0f;
+float current_camera_side_speed = 0.0f;
+
+float delta_time = 0.0f;
+float last_frame = 0.0f;
 
 // Variáveis que definem um programa de GPU (shaders). Veja função LoadShadersFromFiles().
 GLuint vertex_shader_id;
@@ -225,6 +242,7 @@ int main(int argc, char* argv[])
     // de pixels, e com título "INF01047 ...".
     GLFWwindow* window;
     window = glfwCreateWindow(800, 600, "INF01047 - Giovani e Caio ",NULL, NULL);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);  
     if (!window)
     {
         glfwTerminate();
@@ -358,14 +376,21 @@ int main(int argc, char* argv[])
 
         // Abaixo definimos as varáveis que efetivamente definem a câmera virtual.
         // Veja slides 195-227 e 229-234 do documento Aula_08_Sistemas_de_Coordenadas.pdf.
-        glm::vec4 camera_position_c  = glm::vec4(x,y,z,1.0f); // Ponto "c", centro da câmera
-        glm::vec4 camera_lookat_l    = glm::vec4(0.0f,0.0f,0.0f,1.0f); // Ponto "l", para onde a câmera (look-at) estará sempre olhando
-        glm::vec4 camera_view_vector = camera_lookat_l - camera_position_c; // Vetor "view", sentido para onde a câmera está virada
+
         glm::vec4 camera_up_vector   = glm::vec4(0.0f,1.0f,0.0f,0.0f); // Vetor "up" fixado para apontar para o "céu" (eito Y global)
+        camera_view_vector = glm::vec4(x, y, z, 0.0f);
+        camera_right = glm::normalize(crossproduct(up, camera_view_vector));
+        camera_up = glm::normalize(crossproduct(camera_view_vector, camera_right));
+        camera_front = glm::normalize(crossproduct(camera_right, camera_up));
+
+        camera_position_c += camera_front * current_camera_front_speed * delta_time;
+        camera_position_c += camera_right * current_camera_side_speed * delta_time;
+        camera_position_c[1] = 1.0f;
 
         // Computamos a matriz "View" utilizando os parâmetros da câmera para
         // definir o sistema de coordenadas da câmera.  Veja slides 2-14, 184-190 e 236-242 do documento Aula_08_Sistemas_de_Coordenadas.pdf.
         glm::mat4 view = Matrix_Camera_View(camera_position_c, camera_view_vector, camera_up_vector);
+        
 
         // Agora computamos a matriz de Projeção.
         glm::mat4 projection;
@@ -559,6 +584,10 @@ void DrawVirtualObject(const char* object_name)
     // vértices apontados pelo VAO criado pela função BuildTrianglesAndAddToVirtualScene(). Veja
     // comentários detalhados dentro da definição de BuildTrianglesAndAddToVirtualScene().
     glBindVertexArray(g_VirtualScene[object_name].vertex_array_object_id);
+
+    float current_frame = glfwGetTime();
+    delta_time = current_frame - last_frame;
+    last_frame = current_frame;
 
     // Setamos as variáveis "bbox_min" e "bbox_max" do fragment shader
     // com os parâmetros da axis-aligned bounding box (AABB) do modelo.
@@ -1101,31 +1130,28 @@ void CursorPosCallback(GLFWwindow* window, double xpos, double ypos)
     // parâmetros que definem a posição da câmera dentro da cena virtual.
     // Assim, temos que o usuário consegue controlar a câmera.
 
-    if (g_LeftMouseButtonPressed)
-    {
-        // Deslocamento do cursor do mouse em x e y de coordenadas de tela!
-        float dx = xpos - g_LastCursorPosX;
-        float dy = ypos - g_LastCursorPosY;
+    // Deslocamento do cursor do mouse em x e y de coordenadas de tela!
+    float dx = xpos - g_LastCursorPosX;
+    float dy = g_LastCursorPosY - ypos;
 
-        // Atualizamos parâmetros da câmera com os deslocamentos
-        g_CameraTheta -= 0.01f*dx;
-        g_CameraPhi   += 0.01f*dy;
+    // Atualizamos parâmetros da câmera com os deslocamentos
+    g_CameraTheta -= 0.01f*dx;
+    g_CameraPhi   += 0.01f*dy;
 
-        // Em coordenadas esféricas, o ângulo phi deve ficar entre -pi/2 e +pi/2.
-        float phimax = 3.141592f/2;
-        float phimin = -phimax;
+    // Em coordenadas esféricas, o ângulo phi deve ficar entre -pi/2 e +pi/2.
+    float phimax = 3.141592f/2;
+    float phimin = -phimax;
 
-        if (g_CameraPhi > phimax)
-            g_CameraPhi = phimax;
+    if (g_CameraPhi > phimax)
+        g_CameraPhi = phimax;
 
-        if (g_CameraPhi < phimin)
-            g_CameraPhi = phimin;
+    if (g_CameraPhi < phimin)
+        g_CameraPhi = phimin;
 
-        // Atualizamos as variáveis globais para armazenar a posição atual do
-        // cursor como sendo a última posição conhecida do cursor.
-        g_LastCursorPosX = xpos;
-        g_LastCursorPosY = ypos;
-    }
+    // Atualizamos as variáveis globais para armazenar a posição atual do
+    // cursor como sendo a última posição conhecida do cursor.
+    g_LastCursorPosX = xpos;
+    g_LastCursorPosY = ypos;
 
     if (g_RightMouseButtonPressed)
     {
@@ -1253,6 +1279,46 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mod)
         LoadShadersFromFiles();
         fprintf(stdout,"Shaders recarregados!\n");
         fflush(stdout);
+    }
+
+    // Se o usuário apertar a tecla W, a câmera deve se movimentar para frente.
+    if (key == GLFW_KEY_W && action == GLFW_PRESS)
+    {
+        current_camera_front_speed = camera_front_speed;
+    }
+    else if (key == GLFW_KEY_W && action == GLFW_RELEASE)
+    {
+        current_camera_front_speed = 0.0f;
+    }
+
+    // Se o usuário apertar a tecla S, a câmera deve se movimentar para trás.
+    if (key == GLFW_KEY_S && action == GLFW_PRESS)
+    {
+        current_camera_front_speed = - camera_front_speed;
+    }
+    else if (key == GLFW_KEY_S && action == GLFW_RELEASE)
+    {
+        current_camera_front_speed = 0.0f;
+    }
+
+    // Se o usuário apertar a tecla A, a câmera deve se movimentar para esquerda.
+    if (key == GLFW_KEY_A && action == GLFW_PRESS)
+    {
+        current_camera_side_speed = camera_side_speed;
+    }
+    else if (key == GLFW_KEY_A && action == GLFW_RELEASE)
+    {
+        current_camera_side_speed = 0.0f;
+    }
+
+    // Se o usuário apertar a tecla D, a câmera deve se movimentar para direita.
+    if (key == GLFW_KEY_D && action == GLFW_PRESS)
+    {
+        current_camera_side_speed = - camera_side_speed;
+    }
+    else if (key == GLFW_KEY_D && action == GLFW_RELEASE)
+    {
+        current_camera_side_speed = 0.0f;
     }
 }
 
