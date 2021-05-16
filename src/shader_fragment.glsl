@@ -131,8 +131,12 @@ void main()
         V = texcoords.y;
     }
 
-    // Obtemos a refletância difusa a partir da leitura da imagem TextureImage0
-
+    else
+    {
+        // Coordenadas de textura do plano, obtidas do arquivo OBJ.
+        U = texcoords.x;
+        V = texcoords.y;
+    }
 
     // Equação de Iluminação
     float lambert = max(0,dot(n,l));
@@ -154,18 +158,22 @@ void main()
     if ( object_id == WALL1 )
     {
         color = Kd_wall1 * (lambert + 0.01) + Ks_wall1 * blinn_phong;
+        // color = Kd0_TARGET * (lambert + 0.01);
     }
     else if ( object_id == WALL2 )
     {
         color = Kd_wall2 * (lambert + 0.01);
+        // color = Kd0_TARGET * (lambert + 0.01);
     }
     else if ( object_id == WALL3 )
     {
         color = Kd_wall1 * (lambert + 0.01);
+        // color = Kd0_TARGET * (lambert + 0.01);
     }
     else if ( object_id == WALL4 )
     {
         color = Kd_wall2 * (lambert + 0.01);
+        // color = Kd0_TARGET * (lambert + 0.01);
     }
 
     else if ( object_id == BUNNY )
@@ -180,6 +188,7 @@ void main()
     {
         color = Kd0_TARGET * (lambert + 0.01);
     }
+    else color = Kd0_TARGET * (lambert + 0.01);
 
     // Cor final com correção gamma, considerando monitor sRGB.
     // Veja https://en.wikipedia.org/w/index.php?title=Gamma_correction&oldid=751281772#Windows.2C_Mac.2C_sRGB_and_TV.2Fvideo_standard_gammas

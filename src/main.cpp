@@ -567,25 +567,25 @@ int main(int argc, char* argv[])
         DrawVirtualObject("plane");
 
         // Desenhamos a parede 1
-        model = Matrix_Translate(0.0f,1.0f,-1.0f) * Matrix_Rotate_X(PI / 2) * Matrix_Scale(3.0f, 3.0f, 1.0f);
+        model = Matrix_Translate(0.0f,300.0f,-300.0f) * Matrix_Rotate_X(PI / 2);
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, WALL1);
         DrawVirtualObject("wall");
 
         // Desenhamos a parede 2
-        model = Matrix_Translate(3.0f,1.0f,2.0f) * Matrix_Rotate_Z(PI / 2) * Matrix_Rotate_Y(-PI/2) * Matrix_Scale(3.0f, 3.0f, 1.0f);
+        model = Matrix_Translate(300.0f,300.0f,0.0f) * Matrix_Rotate_Z(PI / 2) * Matrix_Rotate_Y(-PI/2);
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, WALL2);
         DrawVirtualObject("wall");
 
         // Desenhamos a parede 3
-        model = Matrix_Translate(0.0f,1.0f,5.0f) * Matrix_Rotate_X(-PI / 2) * Matrix_Rotate_Y(PI) * Matrix_Scale(3.0f, 3.0f, 1.0f);
+        model = Matrix_Translate(0.0f,300.0f,300.0f) * Matrix_Rotate_X(-PI / 2) * Matrix_Rotate_Y(PI);
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, WALL3);
         DrawVirtualObject("wall");
 
         // Desenhamos a parede 4
-        model = Matrix_Translate(-3.0f,1.0f,2.0f) * Matrix_Rotate_Z(-PI / 2) * Matrix_Rotate_Y(PI/2) * Matrix_Scale(3.0f, 3.0f, 1.0f);
+        model = Matrix_Translate(-300.0f,300.0f,0.0f) * Matrix_Rotate_Z(-PI / 2) * Matrix_Rotate_Y(PI/2);
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, WALL4);
         DrawVirtualObject("wall");
