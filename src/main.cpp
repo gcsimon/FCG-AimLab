@@ -196,6 +196,23 @@ float g_CameraDistance = 5.5f; // Distância da câmera para a origem
 float pauseCameraX = 0.0f;
 int game_status = 10;
 
+glm::vec4 up = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
+glm::vec4 camera_front = glm::vec4(0.0f, 0.0f, -1.0f, 1.0f);
+glm::vec4 camera_position_c  = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+glm::vec4 camera_view_vector = glm::vec4(1.0f, 0.0f, 1.0f, 0.0f);
+glm::vec4 camera_right = glm::normalize(crossproduct(up, camera_view_vector));
+glm::vec4 camera_up = crossproduct(camera_view_vector, camera_right);
+glm::mat4 view;
+
+float camera_front_speed = 30000.0f;
+float camera_side_speed = 30000.0f;
+
+float current_camera_front_speed = 0.0f;
+float current_camera_side_speed = 0.0f;
+
+float delta_time = 0.0f;
+float last_frame = 0.0f;
+
 
 // Variável que controla o tipo de projeção utilizada: perspectiva ou ortográfica.
 bool g_UsePerspectiveProjection = true;
@@ -247,6 +264,8 @@ int main(int argc, char* argv[])
     // de pixels, e com título "INF01047 ...".
     GLFWwindow* window;
     window = glfwCreateWindow(1000, 600, "INF01047 - Giovani e Caio", NULL, NULL);
+    // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);  
+
     if (!window)
     {
         glfwTerminate();
@@ -414,16 +433,15 @@ int main(int argc, char* argv[])
         // variáveis g_CameraDistance, g_CameraPhi, e g_CameraTheta são
         // controladas pelo mouse do usuário. Veja as funções CursorPosCallback()
         // e ScrollCallback().
-        //float r = g_CameraDistance;
-        //float y = r*sin(g_CameraPhi)+ weaponPosZ;
-        //float z = r*cos(g_CameraPhi)*cos(g_CameraTheta) ;
-        //float x = r*cos(g_CameraPhi)*sin(g_CameraTheta);
+        float r = g_CameraDistance;
+        float y = r*sin(g_CameraPhi) + weaponPosZ;
+        float z = r*cos(g_CameraPhi)*cos(g_CameraTheta) ;
+        float x = r*cos(g_CameraPhi)*sin(g_CameraTheta);
 
         // CamX = CarX + cos (someangle) * (distância do carro)
 
         //float r = g_CameraDistance;
 
-        glm::vec4 camera_position_c;
         glm::mat4 transf_camera;
         glm::vec4 camera_lookat_l;
         glm::vec4 camera_view_vector;
@@ -446,6 +464,9 @@ int main(int argc, char* argv[])
             camera_lookat_l    = glm::vec4(weaponPosX,weaponPosY,weaponPosZ,1.0f); // Ponto "l", para onde a câmera (look-at) estará sempre olhando
             camera_view_vector = camera_lookat_l - camera_position_c; // Vetor "view", sentido para onde a câmera está virada
             camera_up_vector   = transf_camera * glm::vec4(0.0f,1.0f,0.0f,0.0f); // Vetor "up" fixado para apontar para o "céu" (eito Y global)
+            camera_right = glm::normalize(crossproduct(up, camera_view_vector));
+            camera_up = glm::normalize(crossproduct(camera_view_vector, camera_right));
+            camera_front = glm::normalize(crossproduct(camera_right, camera_up));
         }
         else
         {
@@ -1279,7 +1300,7 @@ void CursorPosCallback(GLFWwindow* window, double xpos, double ypos)
 
     // Deslocamento do cursor do mouse em x e y de coordenadas de tela!
     float dx = xpos - g_LastCursorPosX;
-    float dy = ypos - g_LastCursorPosY;
+    float dy = g_LastCursorPosY - ypos;
 
     // Atualizamos parÃ¢metros da cÃ¢mera com os deslocamentos
     g_CameraTheta -= 0.01f*dx;
