@@ -292,7 +292,9 @@ int main(int argc, char* argv[])
 
     // Carregamos duas imagens para serem utilizadas como textura
     LoadTextureImage("../../data/tc-earth_daymap_surface.jpg");      // TextureImage0
-    LoadTextureImage("../../data/images.jpeg");// TextureImage2
+    LoadTextureImage("../../data/images.jpeg");// TextureImage1
+    LoadTextureImage("../../data/wall1.jpg"); // TextureImage2
+    LoadTextureImage("../../data/wall2.jpg"); // TextureImage3
 
     // Construímos a representação de objetos geométricos através de malhas de triângulos
     ObjModel spheremodel("../../data/sphere.obj");
@@ -307,9 +309,21 @@ int main(int argc, char* argv[])
     ComputeNormals(&planemodel);
     BuildTrianglesAndAddToVirtualScene(&planemodel);
 
-    //ObjModel targetmodel("../../data/sphere.obj");
-    //ComputeNormals(&targetmodel);
-    //BuildTrianglesAndAddToVirtualScene(&targetmodel);
+    ObjModel wall1model("../../data/wall.obj");
+    ComputeNormals(&wall1model);
+    BuildTrianglesAndAddToVirtualScene(&wall1model);
+
+    ObjModel wall2model("../../data/wall.obj");
+    ComputeNormals(&wall2model);
+    BuildTrianglesAndAddToVirtualScene(&wall2model);
+
+    ObjModel wall3model("../../data/wall.obj");
+    ComputeNormals(&wall3model);
+    BuildTrianglesAndAddToVirtualScene(&wall3model);
+
+    ObjModel wall4model("../../data/wall.obj");
+    ComputeNormals(&wall4model);
+    BuildTrianglesAndAddToVirtualScene(&wall4model);
 
     if ( argc > 1 )
     {
@@ -526,23 +540,17 @@ int main(int argc, char* argv[])
             pause = true;
         }*/
 
-#define SPHERE 0
-#define BUNNY  1
-#define PLANE  2
-#define TARGET   3
+        #define SPHERE 0
+        #define BUNNY  1
+        #define PLANE  2
+        #define TARGET 3
+        #define WALL1  4
+        #define WALL2  5
+        #define WALL3  6
+        #define WALL4  7
+        #define PI     3.14159265
 
-        // Desenhamos o modelo da esferam_model = glm::scale(m_model, glm::vec3(x, y, 1.0f));
-
-        // model = Matrix_Translate(0.0f,30.0f,-300.0f)
-        //         * Matrix_Rotate_Z(0.6f)
-        //         * Matrix_Rotate_X(0.2f)
-        //         * Matrix_Rotate_Y((float)glfwGetTime() * 0.1f);
-        // model = glm::scale(model, glm::vec3(5.0f, 5.0f, 5.0f));
-        // glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-        // glUniform1i(object_id_uniform, SPHERE);
-        // DrawVirtualObject("sphere");
-
-        // Desenhamos o modelo do coelho
+        // Desenhamos o modelo da arma
         model = Matrix_Translate(weaponPosX,weaponPosY,weaponPosZ)
                 * Matrix_Rotate_X(g_AngleX)
                 * Matrix_Rotate_Y(g_AngleY - 0.1f)
@@ -557,6 +565,30 @@ int main(int argc, char* argv[])
         glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
         glUniform1i(object_id_uniform, PLANE);
         DrawVirtualObject("plane");
+
+        // Desenhamos a parede 1
+        model = Matrix_Translate(0.0f,1.0f,-1.0f) * Matrix_Rotate_X(PI / 2) * Matrix_Scale(3.0f, 3.0f, 1.0f);
+        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(object_id_uniform, WALL1);
+        DrawVirtualObject("wall");
+
+        // Desenhamos a parede 2
+        model = Matrix_Translate(3.0f,1.0f,2.0f) * Matrix_Rotate_Z(PI / 2) * Matrix_Rotate_Y(-PI/2) * Matrix_Scale(3.0f, 3.0f, 1.0f);
+        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(object_id_uniform, WALL2);
+        DrawVirtualObject("wall");
+
+        // Desenhamos a parede 3
+        model = Matrix_Translate(0.0f,1.0f,5.0f) * Matrix_Rotate_X(-PI / 2) * Matrix_Rotate_Y(PI) * Matrix_Scale(3.0f, 3.0f, 1.0f);
+        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(object_id_uniform, WALL3);
+        DrawVirtualObject("wall");
+
+        // Desenhamos a parede 4
+        model = Matrix_Translate(-3.0f,1.0f,2.0f) * Matrix_Rotate_Z(-PI / 2) * Matrix_Rotate_Y(PI/2) * Matrix_Scale(3.0f, 3.0f, 1.0f);
+        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(object_id_uniform, WALL4);
+        DrawVirtualObject("wall");
 
         //curva de bezie para movimento dos targets
 

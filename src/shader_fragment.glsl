@@ -22,6 +22,11 @@ uniform mat4 projection;
 #define TARGET 0
 #define BUNNY  1
 #define PLANE  2
+#define WALL1  4
+#define WALL2  5
+#define WALL3  6
+#define WALL4  7
+
 uniform int object_id;
 
 // Parâmetros da axis-aligned bounding box (AABB) do modelo
@@ -141,21 +146,41 @@ void main()
     vec3 Kd0_weapon = texture(TextureImage1, vec2(U,V)).rgb;
     vec3 Kd0_TARGET = texture(TextureImage0, vec2(U,V)).rgb;
 
-    if ( object_id == BUNNY )
+    vec3 Kd_wall1 = texture(TextureImage2, vec2(U,V)).rgb;
+    vec3 Ks_wall1 = vec3(0.3f,0.3f,0.3f);
+    vec3 Kd_wall2 = texture(TextureImage3, vec2(U,V)).rgb;
+
+
+    if ( object_id == WALL1 )
+    {
+        color = Kd_wall1 * (lambert + 0.01) + Ks_wall1 * blinn_phong;
+    }
+    else if ( object_id == WALL2 )
+    {
+        color = Kd_wall2 * (lambert + 0.01);
+    }
+    else if ( object_id == WALL3 )
+    {
+        color = Kd_wall1 * (lambert + 0.01);
+    }
+    else if ( object_id == WALL4 )
+    {
+        color = Kd_wall2 * (lambert + 0.01);
+    }
+
+    else if ( object_id == BUNNY )
     {
         color = Kd0_weapon *(lambert + 0.01)+ Ks_weapon * blinn_phong;
     }
-    if ( object_id == PLANE )
+    else if ( object_id == PLANE )
     {
         color = Kd0_dia * (lambert + 0.01);
     }
-    if ( object_id == TARGET )
+    else if ( object_id == TARGET )
     {
         color = Kd0_TARGET * (lambert + 0.01);
-        //color = vec3(1,1,0)* (lambert + 0.02)+ Ks_TARGET * blinn_phong;
     }
 
-    //color = Kd0_dia * (lambert + 0.01) + Kd0_noite * max(0,(1-lambert*8));
     // Cor final com correção gamma, considerando monitor sRGB.
     // Veja https://en.wikipedia.org/w/index.php?title=Gamma_correction&oldid=751281772#Windows.2C_Mac.2C_sRGB_and_TV.2Fvideo_standard_gammas
     color = pow(color, vec3(1.0,1.0,1.0)/2.2);
