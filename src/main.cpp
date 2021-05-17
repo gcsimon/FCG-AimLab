@@ -35,7 +35,7 @@
 
 // Constantes:
 #define QUANT_TARGETS 10
-#define GAME_SPEED 0.005
+#define GAME_SPEED 0.05
 
 
 // Headers das bibliotecas OpenGL
@@ -378,7 +378,7 @@ int main(int argc, char* argv[])
     // Ficamos em loop, renderizando, até que o usuário feche a janela
 
     glm::vec4 targetPosition [QUANT_TARGETS];
-    targetPosition[0] = {0.0f, 5.0f, -100.0f, 1.0f};
+    targetPosition[0] = {3.0f, 3.0f, -100.0f, 1.0f};
     targetPosition[1] = {10.0f, 15.0f, -100.0f, 1.0f};
     targetPosition[2] = {0.0f, 25.0f, -100.0f, 1.0f};
     targetPosition[3] = {30.0f, 35.0f, -100.0f, 1.0f};
@@ -388,6 +388,8 @@ int main(int argc, char* argv[])
     targetPosition[7] = {30.0f, 50.0f, -100.0f, 1.0f};
     targetPosition[8] = {40.0f, 15.0f, -100.0f, 1.0f};
     targetPosition[9] = {50.0f, 50.0f, -100.0f, 1.0f};
+
+
 
     while (!glfwWindowShouldClose(window))
     {
@@ -542,18 +544,8 @@ int main(int argc, char* argv[])
         for(int i = 0; i < QUANT_TARGETS; i++)
             collisionRectangle[i] = targetPosition[i];
 
-        glm::vec4 centerSphere = glm::vec4(weaponPosX, weaponPosY, weaponPosZ, 1);
+        glm::vec4 centerSphere = glm::vec4(bulletPosX, bulletPosY, bulletPosZ, 1);
         isColisionRingEsphere(collisionRectangle, centerSphere, 5);
-
-        // Teste colisão com a lua representada por um cubo:
-        glm::vec4 pointToTest = glm::vec4(weaponPosX, weaponPosY, weaponPosZ, 1);
-        glm::vec4 lowerLeftNearEdge = glm::vec4(0.0f - 5.0f,30.0f - 5.0f,-300.0f - 5.0f, 1);;
-        glm::vec4 upperRightFarEdge = glm::vec4(0.0f + 5.0f,30.0f + 5.0f,-300.0f + 5.0f, 1);;
-        if(isPointInCube(pointToTest, lowerLeftNearEdge, upperRightFarEdge))
-        {
-            game_status = -2;
-            pause = true;
-        }
 
         // Testa colisão com o chão representado por um plano:
         /*glm::vec4 point = glm::vec4(weaponPosX, weaponPosY, weaponPosZ, 1);
@@ -623,9 +615,8 @@ int main(int argc, char* argv[])
         // Desenhamos a bala
         model =   Matrix_Translate(bulletPosX,bulletPosY,bulletPosZ)
                 * Matrix_Rotate_X(g_AngleX)
-                * Matrix_Rotate_Y(g_AngleY - 0.1f)
-                * Matrix_Rotate_Z(g_AngleZ)
-                * Matrix_Translate(0.8f,0.2f,1.5f);
+                * Matrix_Rotate_Y(g_AngleY)
+                * Matrix_Rotate_Z(g_AngleZ);
 
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, BULLET);
@@ -1394,6 +1385,7 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mod)
             if(weaponPosY >= 1.2f) {
             //weaponPosY -= GAME_SPEED*2.0f;
             weaponPosY -= 2.0f;
+            bulletPosY -= 2.0f;
 
             }
         }
@@ -1402,6 +1394,7 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mod)
             if(weaponPosY <= 100.0f) {
             //weaponPosY += GAME_SPEED*2.0f;
             weaponPosY += 2.0f;
+            bulletPosY += 2.0f;
             }
 
         }
@@ -1413,6 +1406,14 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mod)
         {
             g_AngleY -= (mod & GLFW_MOD_SHIFT) ? -delta : delta;
         }
+        if (key == GLFW_KEY_B )
+        {
+            bulletPosX = weaponPosX;
+            bulletPosY = weaponPosY;
+            bulletPosZ = weaponPosZ;
+        }
+
+
     }
 
     // Se o usuário apertar a tecla espaço, resetamos o jogo
