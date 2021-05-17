@@ -144,7 +144,8 @@ void main()
     float lambert = max(0,dot(n,l));
     // Termo de iluminacao do modelo Blinn-Phong
     float blinn_phong = max(0, pow(dot(n,h),15));
-    //Refletancia especular do dragao
+
+    //Refletancia especular da arma
     vec3 Ks_TARGET = vec3(0.9f,0.9f,0.9f);
     vec3 Ks_weapon = vec3(0.3f,0.3f,0.3f);
 
