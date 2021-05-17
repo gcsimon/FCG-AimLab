@@ -32,6 +32,7 @@
 
 #include <iostream>
 #include "float.h"
+#include "collisions.h"
 
 // Constantes:
 #define QUANT_TARGETS 10
@@ -87,7 +88,6 @@ struct ObjModel
 };
 //Funções de Colisão:
 //Funções de colisão:
-bool isPointInSphere(glm::vec4 pointToTest, glm::vec4 centerSphere, float radiusSphere);
 void isColisionRingEsphere(glm::vec4 pointRing[QUANT_TARGETS], glm::vec4 centerSphere, float radiusSphere);
 bool isPointInCube(glm::vec4 pointToTest, glm::vec4 lowerLeftNearEdge, glm::vec4 upperRightFarEdge);
 float edgeEquation(glm::vec3 pontoA,glm::vec3 pontoB,glm::vec3 toTest);
@@ -378,16 +378,16 @@ int main(int argc, char* argv[])
     // Ficamos em loop, renderizando, até que o usuário feche a janela
 
     glm::vec4 targetPosition [QUANT_TARGETS];
-    targetPosition[0] = {3.0f, 3.0f, -100.0f, 1.0f};
-    targetPosition[1] = {10.0f, 15.0f, -100.0f, 1.0f};
-    targetPosition[2] = {0.0f, 25.0f, -100.0f, 1.0f};
-    targetPosition[3] = {30.0f, 35.0f, -100.0f, 1.0f};
-    targetPosition[4] = {0.0f, 45.0f, -100.0f, 1.0f};
-    targetPosition[5] = {10.0f, 10.0f, -100.0f, 1.0f};
-    targetPosition[6] = {20.0f, 10.0f, -100.0f, 1.0f};
-    targetPosition[7] = {30.0f, 50.0f, -100.0f, 1.0f};
-    targetPosition[8] = {40.0f, 15.0f, -100.0f, 1.0f};
-    targetPosition[9] = {50.0f, 50.0f, -100.0f, 1.0f};
+    targetPosition[0] = {3.0f, 3.0f, -50.0f, 1.0f};
+    targetPosition[1] = {10.0f, 15.0f, -50.0f, 1.0f};
+    targetPosition[2] = {0.0f, 25.0f, -50.0f, 1.0f};
+    targetPosition[3] = {30.0f, 35.0f, -50.0f, 1.0f};
+    targetPosition[4] = {0.0f, 45.0f, -50.0f, 1.0f};
+    targetPosition[5] = {10.0f, 10.0f, -50.0f, 1.0f};
+    targetPosition[6] = {20.0f, 10.0f, -50.0f, 1.0f};
+    targetPosition[7] = {30.0f, 50.0f, -50.0f, 1.0f};
+    targetPosition[8] = {40.0f, 15.0f, -50.0f, 1.0f};
+    targetPosition[9] = {50.0f, 50.0f, -50.0f, 1.0f};
 
 
 
@@ -1843,22 +1843,6 @@ void PrintObjModelInfo(ObjModel* model)
 // set makeprg=cd\ ..\ &&\ make\ run\ >/dev/null
 // vim: set spell spelllang=pt_br :
 
-//Funções de colisão:
-bool isPointInSphere(glm::vec4 pointToTest, glm::vec4 centerSphere, float radiusSphere)
-{
-    float pointDistance=glm::length(centerSphere - pointToTest);
-    if(pointDistance>0&&pointDistance <= DBL_MAX)
-        //std::cout<<pointDistance<<std::endl;
-        if(pointDistance<0)
-        {
-            pointDistance=pointDistance*(-1);
-        }
-    if(pointDistance<radiusSphere)
-    {
-        return true;
-    }
-    else return false;
-}
 
 void isColisionRingEsphere(glm::vec4 pointRing[QUANT_TARGETS], glm::vec4 centerSphere, float radiusSphere)
 {
