@@ -35,7 +35,7 @@
 
 // Constantes:
 #define QUANT_TARGETS 10
-#define GAME_SPEED 0.0
+#define GAME_SPEED 0.005
 
 
 // Headers das bibliotecas OpenGL
@@ -176,6 +176,10 @@ float g_AngleZ = 0.0f;
 float weaponPosX = 3.0f;
 float weaponPosY = 3.0f;
 float weaponPosZ = 0.0f;
+
+float bulletPosX = 3.0f;
+float bulletPosY = 3.0f;
+float bulletPosZ = 0.0f;
 
 bool pause = false;
 bool flagTarget[QUANT_TARGETS] = {true, true, true, true, true, true, true, true, true, true};
@@ -344,6 +348,10 @@ int main(int argc, char* argv[])
     ComputeNormals(&wall4model);
     BuildTrianglesAndAddToVirtualScene(&wall4model);
 
+    ObjModel bulletmodel("../../data/bullet.obj");
+    ComputeNormals(&bulletmodel);
+    BuildTrianglesAndAddToVirtualScene(&bulletmodel);
+
     if ( argc > 1 )
     {
         ObjModel model(argv[1]);
@@ -387,25 +395,25 @@ int main(int argc, char* argv[])
         {
             if(sin(g_AngleY) == 1)
             {
-                weaponPosX -=GAME_SPEED*sin(g_AngleY);
+                bulletPosX -=GAME_SPEED*sin(g_AngleY);
             }
             else if(cos(g_AngleY) == 1)
             {
-                weaponPosZ -=GAME_SPEED*cos(g_AngleY);
+                bulletPosZ -=GAME_SPEED*cos(g_AngleY);
             }
             else if(sin(g_AngleY) == -1)
             {
-                weaponPosX +=GAME_SPEED*sin(g_AngleY);
+                bulletPosX +=GAME_SPEED*sin(g_AngleY);
             }
             else if(cos(g_AngleY) == -1)
             {
-                weaponPosZ +=GAME_SPEED*cos(g_AngleY);
+                bulletPosZ +=GAME_SPEED*cos(g_AngleY);
 
             }
             else
             {
-                weaponPosX -=GAME_SPEED*sin(g_AngleY);
-                weaponPosZ -=GAME_SPEED*cos(g_AngleY);
+                bulletPosX -=GAME_SPEED*sin(g_AngleY);
+                bulletPosZ -=GAME_SPEED*cos(g_AngleY);
             }
         }
 
@@ -569,6 +577,7 @@ int main(int argc, char* argv[])
         #define WALL2  5
         #define WALL3  6
         #define WALL4  7
+        #define BULLET 8
         #define PI     3.14159265
 
         // Desenhamos o modelo da arma
@@ -610,6 +619,18 @@ int main(int argc, char* argv[])
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, WALL4);
         DrawVirtualObject("wall");
+
+        // Desenhamos a bala
+        model =   Matrix_Translate(bulletPosX,bulletPosY,bulletPosZ)
+                * Matrix_Rotate_X(g_AngleX)
+                * Matrix_Rotate_Y(g_AngleY - 0.1f)
+                * Matrix_Rotate_Z(g_AngleZ)
+                * Matrix_Translate(0.8f,0.2f,1.5f);
+
+        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(object_id_uniform, BULLET);
+        DrawVirtualObject("bullet");
+
 
         //curva de bezie para movimento dos targets
 
@@ -1404,6 +1425,10 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mod)
         weaponPosX = 3.0f;
         weaponPosY = 3.0f;
         weaponPosZ = 0.0f;
+
+        bulletPosX = 3.0f;
+        bulletPosY = 3.0f;
+        bulletPosZ = 0.0f;
 
         game_status = 10;
 

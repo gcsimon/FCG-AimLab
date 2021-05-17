@@ -26,6 +26,7 @@ uniform mat4 projection;
 #define WALL2  5
 #define WALL3  6
 #define WALL4  7
+#define BULLET 8
 
 uniform int object_id;
 
@@ -181,6 +182,10 @@ void main()
         color = Kd0_dia * (lambert + 0.01);
     }
     else if ( object_id == TARGET )
+    {
+        color = Kd0_TARGET * (lambert + 0.01);
+    }
+    else if ( object_id == BULLET )
     {
         color = Kd0_TARGET * (lambert + 0.01);
     }
