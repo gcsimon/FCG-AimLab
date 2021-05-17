@@ -39,6 +39,7 @@ uniform sampler2D TextureImage0;
 uniform sampler2D TextureImage1;
 uniform sampler2D TextureImage2;
 uniform sampler2D TextureImage3;
+uniform sampler2D TextureImage4;
 
 // O valor de saída ("out") de um Fragment Shader é a cor final do fragmento.
 out vec3 color;
@@ -150,6 +151,7 @@ void main()
     vec3 Kd0_dia = texture(TextureImage0, vec2(U,V)).rgb;
     vec3 Kd0_weapon = texture(TextureImage1, vec2(U,V)).rgb;
     vec3 Kd0_TARGET = texture(TextureImage0, vec2(U,V)).rgb;
+    vec3 Kd0_floor = texture(TextureImage4, vec2(U,V)).rgb;
 
     vec3 Kd_wall1 = texture(TextureImage2, vec2(U,V)).rgb;
     vec3 Ks_wall1 = vec3(0.3f,0.3f,0.3f);
@@ -162,24 +164,23 @@ void main()
     }
     else if ( object_id == WALL2 )
     {
-        color = Kd_wall2 * (lambert + 0.01);
+        color = Kd_wall2 * (lambert + 0.05);
     }
     else if ( object_id == WALL3 )
     {
-        color = Kd_wall1 * (lambert + 0.01);
+        color = Kd_wall1 * (lambert + 0.05);
     }
     else if ( object_id == WALL4 )
     {
-        color = Kd_wall2 * (lambert + 0.01);
+        color = Kd_wall2 * (lambert + 0.03);
     }
-
     else if ( object_id == BUNNY )
     {
         color = Kd0_weapon *(lambert + 0.01)+ Ks_weapon * blinn_phong;
     }
     else if ( object_id == PLANE )
     {
-        color = Kd0_dia * (lambert + 0.01);
+        color = Kd0_floor * (lambert + 0.01);
     }
     else if ( object_id == TARGET )
     {
