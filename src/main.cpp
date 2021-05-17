@@ -36,7 +36,7 @@
 
 // Constantes:
 #define QUANT_TARGETS 10
-#define GAME_SPEED 0.05
+#define GAME_SPEED 0.06
 
 
 // Headers das bibliotecas OpenGL
@@ -88,8 +88,7 @@ struct ObjModel
 };
 //Funções de Colisão:
 //Funções de colisão:
-void isColisionRingEsphere(glm::vec4 pointRing[QUANT_TARGETS], glm::vec4 centerSphere, float radiusSphere);
-bool isPointInCube(glm::vec4 pointToTest, glm::vec4 lowerLeftNearEdge, glm::vec4 upperRightFarEdge);
+void bulletworldcrash(glm::vec4 pointRing[QUANT_TARGETS], glm::vec4 centerSphere, float radiusSphere);
 float edgeEquation(glm::vec3 pontoA,glm::vec3 pontoB,glm::vec3 toTest);
 bool isInFloor(glm::vec4 point, glm::vec4 pointsFloor[4]);
 // Declaração de funções utilizadas para pilha de matrizes de modelagem.
@@ -384,7 +383,7 @@ int main(int argc, char* argv[])
     targetPosition[3] = {30.0f, 35.0f, -50.0f, 1.0f};
     targetPosition[4] = {0.0f, 45.0f, -50.0f, 1.0f};
     targetPosition[5] = {10.0f, 10.0f, -50.0f, 1.0f};
-    targetPosition[6] = {20.0f, 10.0f, -50.0f, 1.0f};
+    targetPosition[6] = {20.0f, 36.0f, -50.0f, 1.0f};
     targetPosition[7] = {30.0f, 50.0f, -50.0f, 1.0f};
     targetPosition[8] = {40.0f, 15.0f, -50.0f, 1.0f};
     targetPosition[9] = {50.0f, 50.0f, -50.0f, 1.0f};
@@ -545,7 +544,7 @@ int main(int argc, char* argv[])
             collisionRectangle[i] = targetPosition[i];
 
         glm::vec4 centerSphere = glm::vec4(bulletPosX, bulletPosY, bulletPosZ, 1);
-        isColisionRingEsphere(collisionRectangle, centerSphere, 5);
+        bulletworldcrash(collisionRectangle, centerSphere, 5);
 
         // Testa colisão com o chão representado por um plano:
         /*glm::vec4 point = glm::vec4(weaponPosX, weaponPosY, weaponPosZ, 1);
@@ -1844,7 +1843,7 @@ void PrintObjModelInfo(ObjModel* model)
 // vim: set spell spelllang=pt_br :
 
 
-void isColisionRingEsphere(glm::vec4 pointRing[QUANT_TARGETS], glm::vec4 centerSphere, float radiusSphere)
+void bulletworldcrash(glm::vec4 pointRing[QUANT_TARGETS], glm::vec4 centerSphere, float radiusSphere)
 {
 
     for(int i = 0; i < 10; i++)
@@ -1857,14 +1856,6 @@ void isColisionRingEsphere(glm::vec4 pointRing[QUANT_TARGETS], glm::vec4 centerS
                 game_status-=1;
         }
     }
-}
-
-bool isPointInCube(glm::vec4 pointToTest, glm::vec4 lowerLeftNearEdge, glm::vec4 upperRightFarEdge)
-{
-    bool isWithinX=((pointToTest.x>lowerLeftNearEdge.x)&&(pointToTest.x<upperRightFarEdge.x));
-    bool isWithinY=((pointToTest.y>lowerLeftNearEdge.y)&&(pointToTest.y<upperRightFarEdge.y));
-    bool isWithinZ=((pointToTest.z>lowerLeftNearEdge.z)&&(pointToTest.z<upperRightFarEdge.z));
-    return(isWithinX&&isWithinY&&isWithinZ);
 }
 
 /*
