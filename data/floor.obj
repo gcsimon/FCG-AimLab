@@ -1,0 +1,10 @@
+g floor
+
+# List of vertices:
+v -1 0 1
+v 1 0 1
+v 1 0 -1
+v -1 0 -1
+
+# List of faces:
+f 1 2 3 4

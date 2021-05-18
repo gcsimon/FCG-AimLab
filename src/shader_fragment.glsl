@@ -19,9 +19,15 @@ uniform mat4 view;
 uniform mat4 projection;
 
 // Identificador que define qual objeto está sendo desenhado no momento
-#define SPHERE 0
+#define TARGET 0
 #define BUNNY  1
 #define PLANE  2
+#define WALL1  4
+#define WALL2  5
+#define WALL3  6
+#define WALL4  7
+#define BULLET 8
+
 uniform int object_id;
 
 // Parâmetros da axis-aligned bounding box (AABB) do modelo
@@ -32,6 +38,8 @@ uniform vec4 bbox_max;
 uniform sampler2D TextureImage0;
 uniform sampler2D TextureImage1;
 uniform sampler2D TextureImage2;
+uniform sampler2D TextureImage3;
+uniform sampler2D TextureImage4;
 
 // O valor de saída ("out") de um Fragment Shader é a cor final do fragmento.
 out vec3 color;
@@ -59,16 +67,19 @@ void main()
     vec4 n = normalize(normal);
 
     // Vetor que define o sentido da fonte de luz em relação ao ponto atual.
-    vec4 l = normalize(vec4(1.0,1.0,0.0,0.0));
+    vec4 l = normalize(vec4(200.0,200.0,200.0,0.0));
 
     // Vetor que define o sentido da câmera em relação ao ponto atual.
     vec4 v = normalize(camera_position - p);
+
+    //Vetor usado para o modelo de iluminacao Blinn-Phong
+    vec4 h = normalize(v + l);
 
     // Coordenadas de textura U e V
     float U = 0.0;
     float V = 0.0;
 
-    if ( object_id == SPHERE )
+    if ( object_id == TARGET )
     {
         // PREENCHA AQUI as coordenadas de textura da esfera, computadas com
         // projeção esférica EM COORDENADAS DO MODELO. Utilize como referência
@@ -122,13 +133,66 @@ void main()
         V = texcoords.y;
     }
 
+    else
+    {
+        // Coordenadas de textura do plano, obtidas do arquivo OBJ.
+        U = texcoords.x;
+        V = texcoords.y;
+    }
+
     // Equação de Iluminação
     float lambert = max(0,dot(n,l));
+    // Termo de iluminacao do modelo Blinn-Phong
+    float blinn_phong = max(0, pow(dot(n,h),15));
+
+    //Refletancia especular da arma
+    vec3 Ks_TARGET = vec3(0.9f,0.9f,0.9f);
+    vec3 Ks_weapon = vec3(0.3f,0.3f,0.3f);
 
     vec3 Kd0_dia = texture(TextureImage0, vec2(U,V)).rgb;
-    vec3 Kd0_noite = texture(TextureImage1, vec2(U,V)).rgb;
+    vec3 Kd0_weapon = texture(TextureImage1, vec2(U,V)).rgb;
+    vec3 Kd0_TARGET = texture(TextureImage0, vec2(U,V)).rgb;
+    vec3 Kd0_floor = texture(TextureImage4, vec2(U,V)).rgb;
 
-    color = Kd0_dia * (lambert + 0.01) + Kd0_noite * max(0,(1-lambert*8));
+    vec3 Kd_wall1 = texture(TextureImage2, vec2(U,V)).rgb;
+    vec3 Ks_wall1 = vec3(0.3f,0.3f,0.3f);
+    vec3 Kd_wall2 = texture(TextureImage3, vec2(U,V)).rgb;
+
+
+    if ( object_id == WALL1 )
+    {
+        color = Kd_wall1 * (lambert + 0.01) + Ks_wall1 * blinn_phong;
+    }
+    else if ( object_id == WALL2 )
+    {
+        color = Kd_wall2 * (lambert + 0.05);
+    }
+    else if ( object_id == WALL3 )
+    {
+        color = Kd_wall1 * (lambert + 0.05);
+    }
+    else if ( object_id == WALL4 )
+    {
+        color = Kd_wall2 * (lambert + 0.03);
+    }
+    else if ( object_id == BUNNY )
+    {
+        color = Kd0_weapon *(lambert + 0.01)+ Ks_weapon * blinn_phong;
+    }
+    else if ( object_id == PLANE )
+    {
+        color = Kd0_floor * (lambert + 0.01);
+    }
+    else if ( object_id == TARGET )
+    {
+        color = Kd0_TARGET * (lambert + 0.01);
+    }
+    else if ( object_id == BULLET )
+    {
+        color = Kd0_TARGET * (lambert + 0.01);
+    }
+    else color = Kd0_TARGET * (lambert + 0.01);
+
     // Cor final com correção gamma, considerando monitor sRGB.
     // Veja https://en.wikipedia.org/w/index.php?title=Gamma_correction&oldid=751281772#Windows.2C_Mac.2C_sRGB_and_TV.2Fvideo_standard_gammas
     color = pow(color, vec3(1.0,1.0,1.0)/2.2);
